@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidaFit Pro Ultra AI</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#111;
+color:white;
+}
+
+.fade{
+animation:fadeIn 0.6s ease;
+}
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+nav{
+background:black;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px;
+flex-wrap:wrap;
+gap:10px;
+}
+
+.logo span{color:#f5c400;}
+
+nav div{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+button{
+background:#f5c400;
+border:none;
+padding:12px;
+border-radius:20px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.hero{
+text-align:center;
+background:#f5c400;
+color:black;
+padding:20px;
+}
+
+.section{
+display:none;
+padding:15px;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:15px;
+}
+
+.card{
+background:#222;
+padding:15px;
+border-radius:15px;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin:5px 0;
+border-radius:10px;
+border:none;
+}
+
+pre{
+background:#000;
+padding:15px;
+border-radius:10px;
+max-height:300px;
+overflow:auto;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<nav>
+<div class="logo">VidaFit <span>PRO AI</span></div>
+
+<div>
+<button onclick="mostrar('ia')">IA</button>
+<button onclick="mostrar('plan')">Plan</button>
+<button onclick="mostrar('progreso')">Progreso</button>
+</div>
+</nav>
+
+<div class="hero fade">
+<h1>🔥 Entrenador Inteligente</h1>
+<p>Rutina diaria automática + dieta personalizada</p>
+</div>
+
+<div id="ia" class="section fade">
+<h2>🧠 IA Entrenador</h2>
+
+<input id="peso" type="number" placeholder="Peso kg">
+<input id="altura" type="number" step="0.01" placeholder="Altura m">
+<input id="edad" type="number" placeholder="Edad">
+
+<select id="objetivo">
+<option value="masa">Masa muscular</option>
+<option value="definir">Definir</option>
+<option value="bajar">Bajar grasa</option>
+</select>
+
+<h3>⚙️ Ajustes del Plan</h3>
+
+<select id="diasEntreno">
+<option value="3">3 días</option>
+<option value="4">4 días</option>
+<option value="5">5 días</option>
+<option value="6">6 días</option>
+</select>
+
+<select id="nivel">
+<option value="principiante">Principiante</option>
+<option value="intermedio">Intermedio</option>
+<option value="avanzado">Avanzado</option>
+</select>
+
+<select id="intensidad">
+<option value="baja">Baja</option>
+<option value="media">Media</option>
+<option value="alta">Alta</option>
+</select>
+
+<button onclick="analizar()">Generar plan</button>
+
+<pre id="resultado"></pre>
+</div>
+
+<div id="plan" class="section fade">
+<h2>📅 Plan semanal</h2>
+<div id="semana" class="cards"></div>
+</div>
+
+<div id="progreso" class="section fade">
+<h2>📊 Progreso</h2>
+<pre id="historial"></pre>
+</div>
+
+</div>
+
+<script>
+
+function mostrar(id){
+document.querySelectorAll('.section').forEach(s=>s.style.display="none");
+document.getElementById(id).style.display="block";
+
+/* MOSTRAR HISTORIAL */
+if(id==="progreso"){
+document.getElementById("historial").innerText =
+localStorage.getItem("historial") || "Aún no hay progreso registrado...";
+}
+}
+
+function analizar(){
+
+let p=parseFloat(peso.value);
+let a=parseFloat(altura.value);
+let e=parseInt(edad.value);
+let obj=objetivo.value;
+
+let diasEntreno=document.getElementById("diasEntreno").value;
+
+if(!p || !a || !e){
+resultado.innerText="⚠️ Completa todo";
+return;
+}
+
+let imc=p/(a*a);
+
+/* RUTINAS */
+function generarRutina(){
+
+let ejercicios=[];
+
+if(obj==="masa"){
+ejercicios=[
+"Sentadillas con barra — 4x8-10",
+"Peso muerto — 4x6-8",
+"Press de banca — 4x8-10",
+"Dominadas — 3x8-12",
+"Fondos en paralelas — 3x10-12",
+"Curl de bíceps — 3x10-12",
+"Press militar — 4x8-10",
+"Remo con barra — 4x8-10",
+"Zancadas con peso — 3x12",
+"Elevaciones laterales — 3x12-15",
+"Hip thrust — 4x10-12"
+];
+}
+
+if(obj==="definir"){
+ejercicios=[
+"Sentadillas — 3x15",
+"Burpees — 3x12",
+"Plancha — 3x30 seg",
+"Mountain climbers — 3x20",
+"Jump squats — 3x12",
+"Flexiones — 3x15",
+"Crunch — 3x20",
+"Elevaciones de piernas — 3x15",
+"Saltar cuerda — 1 min",
+"Russian twist — 3x20"
+];
+}
+
+if(obj==="bajar"){
+ejercicios=[
+"Correr — 10 min",
+"Caminar rápido — 15 min",
+"Bicicleta — 10 min",
+"Saltar cuerda — 1 min",
+"Burpees — 3x12",
+"Jumping jacks — 3x20",
+"Escaladores — 3x20",
+"Sprint — 30 seg",
+"High knees — 30 seg",
+"HIIT — 30s/15s"
+];
+}
+
+return ejercicios.sort(()=>0.5-Math.random()).slice(0,5);
+}
+
+/* DIETA */
+function generarDieta(){
+let comidas=[
+"🥗 Ensalada de pollo y aguacate → Pollo, lechuga, tomate y limón.",
+"🍳 Omelette de espinaca → Huevos con espinaca y queso bajo en grasa.",
+"🥤 Batido verde → Espinaca, banano y manzana.",
+"🍗 Pollo al horno → Con verduras.",
+"🍚 Arroz integral → Con brócoli.",
+"🐟 Pescado → A la plancha.",
+"🌮 Tacos saludables → Con proteína magra.",
+"🥣 Avena → Con frutas.",
+"🥗 Ensalada de atún → Con aguacate.",
+"🍠 Batata → Al horno.",
+"🍝 Pasta integral → Con verduras.",
+"🥪 Sándwich integral → Con pollo.",
+"🍲 Sopa → De verduras.",
+"🥑 Tostadas → Con aguacate.",
+"🍓 Yogur → Con frutas."
+];
+
+return comidas.sort(()=>0.5-Math.random()).slice(0,5);
+}
+
+/* PLAN */
+let dias=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+semana.innerHTML="";
+
+let textoGuardar=`IMC: ${imc.toFixed(1)}\n`;
+
+dias.slice(0,diasEntreno).forEach(d=>{
+
+let rutina=generarRutina();
+let dieta=generarDieta();
+
+textoGuardar+=`\n${d}\n${rutina.join("\n")}\n${dieta.join("\n")}\n`;
+
+semana.innerHTML+=`
+<div class="card fade">
+<h3>${d}</h3>
+<ul>${rutina.map(e=>"<li>"+e+"</li>").join("")}</ul>
+<ul>${dieta.map(e=>"<li>"+e+"</li>").join("")}</ul>
+</div>
+`;
+});
+
+/* GUARDAR PROGRESO */
+let viejo=localStorage.getItem("historial") || "";
+localStorage.setItem("historial", textoGuardar + "\n\n" + viejo);
+
+/* RESULTADO */
+resultado.innerText=`
+IMC: ${imc.toFixed(1)}
+
+💪 Rutina del día:
+${generarRutina().join("\n")}
+`;
+
+}
+
+mostrar('ia');
+
+</script>
+
+</body>
+</html>
